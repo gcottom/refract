@@ -101,4 +101,10 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(s)
+
+	s, err = refract.GetSliceIndexValue(s, 0)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(s)
 }

@@ -13,6 +13,7 @@ func Append(slice any, elems ...any) (any, error) {
 	if val.Kind() != reflect.Slice {
 		return slice, fmt.Errorf("slice argument was not a slice")
 	}
+	vtype := reflect.ValueOf(&slice)
 	elemsCount := 0
 
 	for _, elem := range elems {
@@ -25,22 +26,31 @@ func Append(slice any, elems ...any) (any, error) {
 		}
 	}
 
-	newSlice := reflect.MakeSlice(reflect.SliceOf(val.Type().Elem()), val.Len()+elemsCount, val.Cap()+elemsCount)
-	reflect.Copy(newSlice.Slice(0, val.Len()), val)
+	newSlice := reflect.MakeSlice(reflect.SliceOf(vtype.Type().Elem()), val.Len()+elemsCount, val.Cap()+elemsCount)
+	if err := RangeOverSlice(slice, func(index int, sliceItem any) {
+		v, err := GetSliceIndex(slice, index)
+		if err != nil {
+			return
+		}
+		newSlice.Index(index).Set(reflect.ValueOf(v))
+	}); err != nil {
+		return nil, err
+	}
 
 	counter := 0
 	for _, elem := range elems {
 		if reflect.ValueOf(elem).Kind() == reflect.Slice {
 			RangeOverSlice(elem, func(index int, sliceItem any) {
-				newSlice.Index(val.Len() + counter).Set(reflect.Indirect(reflect.ValueOf(sliceItem)))
+				newSlice.Index(val.Len() + counter).Set(reflect.ValueOf(sliceItem))
 				counter++
 			})
 		} else {
-			newSlice.Index(val.Len() + counter).Set(reflect.Indirect(reflect.ValueOf(elem)))
+			newSlice.Index(val.Len() + counter).Set(reflect.ValueOf(elem))
 			counter++
 		}
 
 	}
+
 	return newSlice.Interface(), nil
 }
 
@@ -81,21 +91,29 @@ func Prepend(slice any, elems ...any) (any, error) {
 			elemsCount++
 		}
 	}
-	newSlice := reflect.MakeSlice(reflect.SliceOf(val.Type().Elem()), val.Len()+elemsCount, val.Cap()+elemsCount)
+	vtype := reflect.ValueOf(&slice)
+	newSlice := reflect.MakeSlice(reflect.SliceOf(vtype.Type().Elem()), val.Len()+elemsCount, val.Cap()+elemsCount)
 
 	counter := 0
 	for _, elem := range elems {
 		if reflect.ValueOf(elem).Kind() == reflect.Slice {
 			RangeOverSlice(elem, func(index int, sliceItem any) {
-				newSlice.Index(counter).Set(reflect.Indirect(reflect.ValueOf(sliceItem)))
+				newSlice.Index(counter).Set(reflect.ValueOf(sliceItem))
 				counter++
 			})
 		} else {
-			newSlice.Index(counter).Set(reflect.Indirect(reflect.ValueOf(elem)))
+			newSlice.Index(counter).Set(reflect.ValueOf(elem))
 			counter++
 		}
 	}
 
-	reflect.Copy(newSlice.Slice(elemsCount, val.Len()+elemsCount), val)
+	RangeOverSlice(slice, func(index int, sliceItem any) {
+		v, err := GetSliceIndex(slice, index)
+		if err != nil {
+			return
+		}
+		newSlice.Index(elemsCount + index).Set(reflect.ValueOf(v))
+	})
+
 	return newSlice.Interface(), nil
 }
