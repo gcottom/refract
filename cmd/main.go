@@ -107,4 +107,25 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(s)
+
+	mappy := refract.NewMapOfStruct("string", d)
+	mpyval := refract.NewStructInstance(d)
+	err = refract.SetStructFieldValue(mpyval, "TestField", "I'm in the mappy")
+	if err != nil {
+		panic(err)
+	}
+	err = refract.PutMapIndex(mappy, "ind1", mpyval)
+	if err != nil {
+		panic(err)
+	}
+	mpyvaleval, err := refract.GetMapIndex(mappy, "ind1")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("MapVal: %v\n", mpyvaleval)
+	mpvalevalcopy, err := refract.GetMapIndexValue(mappy, "ind1")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("MapVal: %v\n", mpvalevalcopy)
 }

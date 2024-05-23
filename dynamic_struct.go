@@ -1,6 +1,7 @@
 package refract
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 )
@@ -19,13 +20,17 @@ func NewStructInstance(structDefinition reflect.Type) any {
 }
 
 func NewSliceOfStruct(structDefinition reflect.Type) any {
-	sTyp := reflect.SliceOf(structDefinition)
+	si := NewStructInstance(structDefinition)
+	sd := reflect.ValueOf(&si).Type().Elem()
+	sTyp := reflect.SliceOf(sd)
 	newSlice := reflect.MakeSlice(sTyp, 0, 0)
 	return newSlice.Interface()
 }
 
 func NewMapOfStruct[T comparable](keyType T, structDefinition reflect.Type) any {
-	mTyp := reflect.MapOf(reflect.TypeOf(keyType), structDefinition)
+	si := NewStructInstance(structDefinition)
+	sd := reflect.ValueOf(&si).Type().Elem()
+	mTyp := reflect.MapOf(reflect.TypeOf(keyType), sd)
 	val := reflect.MakeMap(mTyp)
 	return val.Interface()
 }
@@ -55,10 +60,10 @@ func GetStructFieldValue[T any](structInstance any, fieldName string) (T, error)
 		val = val.Elem()
 	}
 	if val.Kind() != reflect.Struct {
-		return reflect.Zero(reflect.TypeFor[T]()).Interface().(T), fmt.Errorf("expected a struct instance")
+		return reflect.Zero(reflect.TypeFor[T]()).Interface().(T), errors.New("expected a struct instance")
 	}
 	if !val.FieldByName(fieldName).IsValid() {
-		return reflect.Zero(reflect.TypeFor[T]()).Interface().(T), fmt.Errorf("field not valid for struct instance")
+		return reflect.Zero(reflect.TypeFor[T]()).Interface().(T), errors.New("field not valid for struct instance")
 	}
 	if val.FieldByName(fieldName).Kind() != reflect.TypeFor[T]().Kind() {
 		return reflect.Zero(reflect.TypeFor[T]()).Interface().(T), fmt.Errorf("field with name: \"%s\" has underlying type: %s, but generic type assertion was for type: %s", fieldName, val.FieldByName(fieldName).Kind().String(), reflect.TypeFor[T]().Kind().String())
@@ -72,10 +77,10 @@ func GetStructFieldValueAny(structInstance any, fieldName string) (any, error) {
 		val = val.Elem()
 	}
 	if val.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("expected a struct instance")
+		return nil, errors.New("expected a struct instance")
 	}
 	if !val.FieldByName(fieldName).IsValid() {
-		return nil, fmt.Errorf("field not valid for struct instance")
+		return nil, errors.New("field not valid for struct instance")
 	}
 	return val.FieldByName(fieldName).Interface(), nil
 }
