@@ -50,8 +50,8 @@ func NewMapOfType[T comparable](keyType T, typeDefinition reflect.Type) any {
 	si := NewTypeInstance(typeDefinition)
 	sd := reflect.ValueOf(&si).Type().Elem()
 	mTyp := reflect.MapOf(reflect.TypeOf(keyType), sd)
-	val := reflect.MakeMap(mTyp)
-	return val.Interface()
+	newMap := reflect.MakeMap(mTyp)
+	return newMap.Interface()
 }
 
 // SetStructFieldValue takes a typeInstance (generic/dynamic struct or reflect created instance), a fieldName string to specify the field that you want to set
