@@ -8,9 +8,9 @@ import (
 
 func main() {
 	d := refract.NewStructDefinition(refract.NewStructField("TestField", "string", ""))
-	s := refract.NewSliceOfStruct(d)
+	s := refract.NewSliceOfType(d)
 
-	m := refract.NewStructInstance(d)
+	m := refract.NewTypeInstance(d)
 	err := refract.SetStructFieldValue(m, "TestField", "testVal1")
 	if err != nil {
 		panic(err)
@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	m = refract.NewStructInstance(d)
+	m = refract.NewTypeInstance(d)
 	err = refract.SetStructFieldValue(m, "TestField", "testVal2")
 	if err != nil {
 		panic(err)
@@ -28,7 +28,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	m = refract.NewStructInstance(d)
+	m = refract.NewTypeInstance(d)
 	err = refract.SetStructFieldValue(m, "TestField", "banana")
 	if err != nil {
 		panic(err)
@@ -108,8 +108,8 @@ func main() {
 	}
 	fmt.Println(s)
 
-	mappy := refract.NewMapOfStruct("string", d)
-	mpyval := refract.NewStructInstance(d)
+	mappy := refract.NewMapOfType("string", d)
+	mpyval := refract.NewTypeInstance(d)
 	err = refract.SetStructFieldValue(mpyval, "TestField", "I'm in the mappy")
 	if err != nil {
 		panic(err)

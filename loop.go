@@ -25,3 +25,13 @@ func RangeOverSliceReverse(slice any, f func(index int, sliceItem any)) error {
 	}
 	return nil
 }
+
+func RangeOverMap(m any, f func(counter int, key any, value any)) error {
+	val := reflect.ValueOf(m)
+	for counter, k := range val.MapKeys() {
+		key := k.Interface()
+		value := val.MapIndex(k).Interface()
+		f(counter, key, value)
+	}
+	return nil
+}
