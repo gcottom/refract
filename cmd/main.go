@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/gcottom/refract"
 )
@@ -128,4 +129,27 @@ func main() {
 		panic(err)
 	}
 	fmt.Printf("MapVal: %v\n", mpvalevalcopy)
+
+	typ := refract.GetReflectType(mpyval)
+	fmt.Println(typ)
+
+	ntype := refract.NewTypeInstance(typ)
+
+	ntype2 := refract.GetReflectType(ntype)
+	fmt.Println(ntype2)
+
+	mappytype := refract.GetReflectType(s)
+	fmt.Println("type:", mappytype)
+	mappykind := reflect.ValueOf(s).Kind()
+	fmt.Println("kind:", mappykind)
+	mappytypekind := reflect.ValueOf(s).Type().Kind()
+	fmt.Println("typekind:", mappytypekind)
+
+	sl2 := make([]int, 0)
+	sl2 = append(sl2, 1)
+	sl1, err := refract.GetSliceIndexValue(sl2, 0)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(sl1)
 }
