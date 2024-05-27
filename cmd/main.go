@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 
@@ -152,4 +153,16 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(sl1)
+
+	var dct refract.JSONDict
+	err = json.Unmarshal([]byte(`{"a":{"b":"c"},"d":[1,2,"e","f"],"g":[{"h":"i"},{"j":"k"}]}`), &dct)
+	if err != nil {
+		panic(err)
+	}
+
+	dk, err := dct.GetSlice("d").GetIndex(3)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(dk)
 }
