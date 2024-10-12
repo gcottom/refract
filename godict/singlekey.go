@@ -22,3 +22,16 @@ func UnmarshalSingleJSONKey[T any](key string, data []byte) (T, error) {
 	}
 
 }
+
+func UnmarshalSingleJSONKeyIntoPtr(key string, data []byte, v *any) error {
+	m := make(map[string]any)
+	if err := json.Unmarshal(data, &m); err != nil {
+		return err
+	}
+	val, ok := m[key]
+	if !ok {
+		return errors.New("key not found")
+	}
+	*v = val
+	return nil
+}

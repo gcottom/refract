@@ -192,4 +192,11 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(singleText)
+
+	var btext string
+	if err = godict.UnmarshalSingleJSONKeyIntoPtr("a", []byte(`{"a":"j"}`), &btext); err != nil {
+		panic(err)
+	}
+
+	fmt.Println(btext)
 }
