@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
+
+	"github.com/gcottom/refract/safereflect"
 )
 
 func UnmarshalSingleJSONKey[T any](key string, data []byte) (T, error) {
@@ -23,7 +25,7 @@ func UnmarshalSingleJSONKey[T any](key string, data []byte) (T, error) {
 
 }
 
-func UnmarshalSingleJSONKeyIntoPtr(key string, data []byte, v *any) error {
+func UnmarshalSingleJSONKeyIntoPtr(key string, data []byte, v any) error {
 	m := make(map[string]any)
 	if err := json.Unmarshal(data, &m); err != nil {
 		return err
@@ -32,6 +34,9 @@ func UnmarshalSingleJSONKeyIntoPtr(key string, data []byte, v *any) error {
 	if !ok {
 		return errors.New("key not found")
 	}
-	*v = val
-	return nil
+	e, err := safereflect.ValueOf(v).Elem()
+	if err != nil {
+		return err
+	}
+	return e.Set(safereflect.ValueOf(val))
 }
