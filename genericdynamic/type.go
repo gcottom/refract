@@ -1,4 +1,4 @@
-package refract
+package genericdynamic
 
 import (
 	"fmt"

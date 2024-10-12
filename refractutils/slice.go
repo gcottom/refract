@@ -1,4 +1,4 @@
-package refract
+package refractutils
 
 import (
 	"errors"
