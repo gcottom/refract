@@ -3,7 +3,6 @@ package genericdynamic
 import (
 	"errors"
 	"fmt"
-	"reflect"
 	"strings"
 	"unicode"
 
@@ -144,7 +143,7 @@ func NewMapOfTypeWithReflectTypeKey(keyType safereflect.Type, typeDefinition saf
 		return nil, err
 	}
 	sd := safereflect.ValueOf(&si).Type().Elem()
-	mTyp, err := safereflect.MapOf(reflect.TypeOf(keyType), sd)
+	mTyp, err := safereflect.MapOf(safereflect.TypeOf(keyType), sd)
 	if err != nil {
 		return nil, err
 	}
