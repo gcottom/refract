@@ -12,11 +12,19 @@ import (
 )
 
 func main() {
-	d := genericdynamic.NewStructDefinition(genericdynamic.NewStructField("TestField", "string", ""))
-	s := genericdynamic.NewSliceOfType(d)
-
-	m := genericdynamic.NewTypeInstance(d)
-	err := genericdynamic.SetStructFieldValue(m, "TestField", "testVal1")
+	d, err := genericdynamic.NewStructDefinition(genericdynamic.NewStructField("TestField", "string", ""))
+	if err != nil {
+		panic(err)
+	}
+	s, err := genericdynamic.NewSliceOfType(d)
+	if err != nil {
+		panic(err)
+	}
+	m, err := genericdynamic.NewTypeInstance(d)
+	if err != nil {
+		panic(err)
+	}
+	err = genericdynamic.SetStructFieldValue(m, "TestField", "testVal1")
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +32,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	m = genericdynamic.NewTypeInstance(d)
+	m, err = genericdynamic.NewTypeInstance(d)
+	if err != nil {
+		panic(err)
+	}
 	err = genericdynamic.SetStructFieldValue(m, "TestField", "testVal2")
 	if err != nil {
 		panic(err)
@@ -33,7 +44,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	m = genericdynamic.NewTypeInstance(d)
+	m, err = genericdynamic.NewTypeInstance(d)
+	if err != nil {
+		panic(err)
+	}
 	err = genericdynamic.SetStructFieldValue(m, "TestField", "banana")
 	if err != nil {
 		panic(err)
@@ -113,8 +127,14 @@ func main() {
 	}
 	fmt.Println(s)
 
-	mappy := genericdynamic.NewMapOfType("string", d)
-	mpyval := genericdynamic.NewTypeInstance(d)
+	mappy, err := genericdynamic.NewMapOfType("string", d)
+	if err != nil {
+		panic(err)
+	}
+	mpyval, err := genericdynamic.NewTypeInstance(d)
+	if err != nil {
+		panic(err)
+	}
 	err = genericdynamic.SetStructFieldValue(mpyval, "TestField", "I'm in the mappy")
 	if err != nil {
 		panic(err)
@@ -137,7 +157,10 @@ func main() {
 	typ := genericdynamic.GetReflectType(mpyval)
 	fmt.Println(typ)
 
-	ntype := genericdynamic.NewTypeInstance(typ)
+	ntype, err := genericdynamic.NewTypeInstance(typ)
+	if err != nil {
+		panic(err)
+	}
 
 	ntype2 := genericdynamic.GetReflectType(ntype)
 	fmt.Println(ntype2)
