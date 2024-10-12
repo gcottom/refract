@@ -3,6 +3,8 @@ package genericdynamic
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/gcottom/refract/safereflect"
 )
 
 func Assert[T any](v any) (T, error) {
@@ -10,34 +12,34 @@ func Assert[T any](v any) (T, error) {
 	if ok {
 		return out, nil
 	}
-	return reflect.Zero(reflect.TypeFor[T]()).Interface().(T), fmt.Errorf("couldn't assert as %s", reflect.TypeFor[T]().String())
+	return safereflect.ZeroGeneric[T](), fmt.Errorf("couldn't assert as %s", reflect.TypeFor[T]().String())
 }
 
-func GetReflectType(v any) reflect.Type {
-	return reflect.ValueOf(v).Type()
+func GetReflectType(v any) safereflect.Type {
+	return safereflect.ValueOf(v).Type()
 }
 
 func IsPtr(v any) bool {
-	return GetReflectType(v).Kind() == reflect.Ptr
+	return GetReflectType(v).Kind() == safereflect.Pointer
 }
 
 func IsMap(v any) bool {
 	if IsPtr(v) {
-		return GetReflectType(v).Elem().Kind() == reflect.Map
+		return GetReflectType(v).Elem().Kind() == safereflect.Map
 	}
-	return GetReflectType(v).Kind() == reflect.Map
+	return GetReflectType(v).Kind() == safereflect.Map
 }
 
 func IsSlice(v any) bool {
 	if IsPtr(v) {
-		return GetReflectType(v).Elem().Kind() == reflect.Slice
+		return GetReflectType(v).Elem().Kind() == safereflect.Slice
 	}
-	return GetReflectType(v).Kind() == reflect.Slice
+	return GetReflectType(v).Kind() == safereflect.Slice
 }
 
 func IsStruct(v any) bool {
 	if IsPtr(v) {
-		return GetReflectType(v).Elem().Kind() == reflect.Struct
+		return GetReflectType(v).Elem().Kind() == safereflect.Struct
 	}
-	return GetReflectType(v).Kind() == reflect.Struct
+	return GetReflectType(v).Kind() == safereflect.Struct
 }

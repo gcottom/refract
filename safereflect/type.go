@@ -307,3 +307,37 @@ func (t *RefractType) Out(i int) (Type, error) {
 func TypeFor[T any]() Type {
 	return TypeOf((*T)(nil)).Elem()
 }
+
+func MapOf(key, elem Type) (Type, error) {
+	if !ValueOf(key).Comparable() {
+		return nil, errors.New("reflect.MapOf with incomparable key type")
+	}
+	return &RefractType{reflect.MapOf(key.ReflectType(), elem.ReflectType())}, nil
+}
+
+func SliceOf(t Type) Type {
+	return &RefractType{reflect.SliceOf(t.ReflectType())}
+}
+
+// StructOf returns a new struct type with the given fields. StructOf can panic due to the complexity of requirements for structs (unexported fields, etc).
+func StructOf(fields []StructField) (Type, error) {
+	var f []reflect.StructField
+	for _, field := range fields {
+		if field.Name == "" {
+			return nil, errors.New("reflect.StructOf: field " + field.Type.String() + " has no name")
+		}
+		if field.Type == nil {
+			return nil, errors.New("reflect.StructOf: field " + field.Name + " has no type")
+		}
+		f = append(f, reflect.StructField{
+			Name:      field.Name,
+			PkgPath:   field.PkgPath,
+			Type:      field.Type.ReflectType(),
+			Tag:       reflect.StructTag(field.Tag),
+			Offset:    field.Offset,
+			Index:     field.Index,
+			Anonymous: field.Anonymous,
+		})
+	}
+	return &RefractType{reflect.StructOf(f)}, nil
+}

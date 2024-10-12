@@ -698,6 +698,10 @@ func Zero(t Type) (Value, error) {
 	return Value{out}, nil
 }
 
+func ZeroGeneric[T any]() T {
+	return reflect.Zero(reflect.TypeFor[T]()).Interface().(T)
+}
+
 // may panic if t is a new type that may not be allocated in heap (possibly undefined cgo C type)
 func New(t Type) (Value, error) {
 	if t.ReflectType() == nil {

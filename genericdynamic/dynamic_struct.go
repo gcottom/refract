@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strings"
 	"unicode"
+
+	"github.com/gcottom/refract/safereflect"
 )
 
 // NewStructField is used to create new struct fields to be used with NewStructDefinition as arguments. This function
@@ -13,7 +15,7 @@ import (
 // first letter of the fieldName will automatically be capitalized if it is not already capitalized. fieldType should
 // be a var with the type that the field should hold. For string type, it would be "string", for int, it would be an
 // int like 1 or 2. fieldTag takes a string which contains the tags that would normally be in a struct tag. For example `json:"fieldName"`.
-func NewStructField(fieldName string, fieldType any, fieldTag string) reflect.StructField {
+func NewStructField(fieldName string, fieldType any, fieldTag string) safereflect.StructField {
 	fieldName = strings.ReplaceAll(fieldName, " ", "")
 	if !unicode.IsUpper(rune(fieldName[0])) {
 		r := []rune(fieldName)
@@ -21,7 +23,7 @@ func NewStructField(fieldName string, fieldType any, fieldTag string) reflect.St
 		fieldName = string(r)
 	}
 
-	return reflect.StructField{Name: fieldName, Type: reflect.TypeOf(fieldType), Tag: reflect.StructTag(fieldTag)}
+	return safereflect.StructField{Name: fieldName, Type: safereflect.TypeOf(fieldType), Tag: safereflect.StructTag(fieldTag)}
 }
 
 // NewStructFieldWithReflectTag is used to create new struct fields to be used with NewStructDefinition as arguments. This function
@@ -29,7 +31,7 @@ func NewStructField(fieldName string, fieldType any, fieldTag string) reflect.St
 // first letter of the fieldName will automatically be capitalized if it is not already capitalized. fieldType should
 // be a var with the type that the field should hold. For string type, it would be "string", for int, it would be an
 // int like 1 or 2. fieldTag takes a reflect.StructTag.
-func NewStructFieldWithReflectTag(fieldName string, fieldType any, fieldTag reflect.StructTag) reflect.StructField {
+func NewStructFieldWithReflectTag(fieldName string, fieldType any, fieldTag safereflect.StructTag) safereflect.StructField {
 	fieldName = strings.ReplaceAll(fieldName, " ", "")
 	if !unicode.IsUpper(rune(fieldName[0])) {
 		r := []rune(fieldName)
@@ -37,14 +39,14 @@ func NewStructFieldWithReflectTag(fieldName string, fieldType any, fieldTag refl
 		fieldName = string(r)
 	}
 
-	return reflect.StructField{Name: fieldName, Type: reflect.TypeOf(fieldType), Tag: fieldTag}
+	return safereflect.StructField{Name: fieldName, Type: safereflect.TypeOf(fieldType), Tag: fieldTag}
 }
 
 // NewStructFieldWithReflectTagAndType is used to create new struct fields to be used with NewStructDefinition as arguments. This function
 // takes a fieldName string, fieldType reflect.Type, and fieldTag reflect.StructTag as arguments. The field must be exported, therefore the
 // first letter of the fieldName will automatically be capitalized if it is not already capitalized. fieldType should
 // be a reflect.Type, it can also be a struct definition created by refract. fieldTag takes a reflect.StructTag.
-func NewStructFieldWithReflectTagAndType(fieldName string, fieldType reflect.Type, fieldTag reflect.StructTag) reflect.StructField {
+func NewStructFieldWithReflectTagAndType(fieldName string, fieldType safereflect.Type, fieldTag safereflect.StructTag) safereflect.StructField {
 	fieldName = strings.ReplaceAll(fieldName, " ", "")
 	if !unicode.IsUpper(rune(fieldName[0])) {
 		r := []rune(fieldName)
@@ -52,7 +54,7 @@ func NewStructFieldWithReflectTagAndType(fieldName string, fieldType reflect.Typ
 		fieldName = string(r)
 	}
 
-	return reflect.StructField{Name: fieldName, Type: fieldType, Tag: fieldTag}
+	return safereflect.StructField{Name: fieldName, Type: fieldType, Tag: fieldTag}
 }
 
 // NewStructFieldWithReflectType is used to create new struct fields to be used with NewStructDefinition as arguments. This function
@@ -60,7 +62,7 @@ func NewStructFieldWithReflectTagAndType(fieldName string, fieldType reflect.Typ
 // first letter of the fieldName will automatically be capitalized if it is not already capitalized. fieldType should
 // be a reflect.Type, it can also be a struct definition created by refract. fieldTag takes a string which contains the tags that
 // would normally be in a struct tag. For example `json:"fieldName"`.
-func NewStructFieldWithReflectType(fieldName string, fieldType reflect.Type, fieldTag string) reflect.StructField {
+func NewStructFieldWithReflectType(fieldName string, fieldType safereflect.Type, fieldTag string) safereflect.StructField {
 	fieldName = strings.ReplaceAll(fieldName, " ", "")
 	if !unicode.IsUpper(rune(fieldName[0])) {
 		r := []rune(fieldName)
@@ -68,62 +70,89 @@ func NewStructFieldWithReflectType(fieldName string, fieldType reflect.Type, fie
 		fieldName = string(r)
 	}
 
-	return reflect.StructField{Name: fieldName, Type: fieldType, Tag: reflect.StructTag(fieldTag)}
+	return safereflect.StructField{Name: fieldName, Type: fieldType, Tag: safereflect.StructTag(fieldTag)}
 }
 
 // NewStructDefinition takes a variadic of fields which are reflect.StructField. reflect.StructField can be created by
 // calling the NewStructField function. NewStructDefinition creates a reflect.Type which can be used in the NewTypeInstance,
 // NewSliceOfType, and NewMapOfType functions.
-func NewStructDefinition(fields ...reflect.StructField) reflect.Type {
-	return reflect.StructOf(fields)
+func NewStructDefinition(fields ...safereflect.StructField) (safereflect.Type, error) {
+	return safereflect.StructOf(fields)
 }
 
 // NewTypeInstance takes a typeDefinition as an argument. typeDefinition is a reflect.Type which can be created by using the
 // NewStructDefinition function. NewTypeInstance creates a pointer to an instance of the type specified. By using this function,
 // you can create dynamic and generic instances of a type. You can also use this function with any reflect.Type to create a new
 // instance of a native type.
-func NewTypeInstance(typeDefinition reflect.Type) any {
-	if typeDefinition.Kind() == reflect.Ptr {
+func NewTypeInstance(typeDefinition safereflect.Type) (any, error) {
+	if typeDefinition.Kind() == safereflect.Pointer {
 		typeDefinition = typeDefinition.Elem()
 	}
-	val := reflect.New(typeDefinition)
+	val, err := safereflect.New(typeDefinition)
+	if err != nil {
+		return nil, err
+	}
 	return val.Interface()
 }
 
 // NewSliceOfType is used with a typeDefinition. typeDefinition is a reflect.Type which can be created by using the NewStructDefinition
 // function. NewSliceOfType creates a pointer to a slice of the type specified. This function can be used to create slices of dynamic types.
 // This function can be used with any reflect.Type.
-func NewSliceOfType(typeDefinition reflect.Type) any {
-	si := NewTypeInstance(typeDefinition)
-	sd := reflect.ValueOf(&si).Type().Elem()
-	sTyp := reflect.SliceOf(sd)
-	newSlice := reflect.MakeSlice(sTyp, 0, 0)
+func NewSliceOfType(typeDefinition safereflect.Type) (any, error) {
+	si, err := NewTypeInstance(typeDefinition)
+	if err != nil {
+		return nil, err
+	}
+	sd := safereflect.ValueOf(&si).Type().Elem()
+	sTyp := safereflect.SliceOf(sd)
+	newSlice, err := safereflect.MakeSlice(sTyp, 0, 0)
+	if err != nil {
+		return nil, err
+	}
 	return newSlice.Interface()
 }
 
 // NewMapOfType is used with a keyType (comparable) and a typeDefinition. keyType must implement the comparable interface. typeDefinition is a reflect.Type
 // which can be created by using the NewStructDefinition function. NewMapOfType creates a pointer to a map of the type specified.
 // This function can create instances of maps of dynamic types. This function can be used with any reflect.Type.
-func NewMapOfType[T comparable](keyType T, typeDefinition reflect.Type) any {
-	si := NewTypeInstance(typeDefinition)
-	sd := reflect.ValueOf(&si).Type().Elem()
-	mTyp := reflect.MapOf(reflect.TypeOf(keyType), sd)
-	newMap := reflect.MakeMap(mTyp)
+func NewMapOfType[T comparable](keyType T, typeDefinition safereflect.Type) (any, error) {
+	si, err := NewTypeInstance(typeDefinition)
+	if err != nil {
+		return nil, err
+	}
+	sd := safereflect.ValueOf(&si).Type().Elem()
+	mTyp, err := safereflect.MapOf(safereflect.TypeOf(keyType), sd)
+	if err != nil {
+		return nil, err
+	}
+	newMap, err := safereflect.MakeMap(mTyp)
+	if err != nil {
+		return nil, err
+	}
 	return newMap.Interface()
 }
 
 // NewMapOfTypeWithReflectTypeKey is used with a keyType reflect.Type and a typeDefinition reflect.Type. keyType must implement the comparable interface.
 // NewMapOfTypeWithReflectTypeKey creates a pointer to a map of the type specified. This function can create instances of maps of
 // dynamic types. This function can be used with any reflect.Type.
-func NewMapOfTypeWithReflectTypeKey(keyType reflect.Type, typeDefinition reflect.Type) (any, error) {
+func NewMapOfTypeWithReflectTypeKey(keyType safereflect.Type, typeDefinition safereflect.Type) (any, error) {
 	if !keyType.Comparable() {
 		return nil, errors.New("keyType is not comparable")
 	}
-	si := NewTypeInstance(typeDefinition)
-	sd := reflect.ValueOf(&si).Type().Elem()
-	mTyp := reflect.MapOf(reflect.TypeOf(keyType), sd)
-	newMap := reflect.MakeMap(mTyp)
-	return newMap.Interface(), nil
+	si, err := NewTypeInstance(typeDefinition)
+	if err != nil {
+		return nil, err
+	}
+	sd := safereflect.ValueOf(&si).Type().Elem()
+	mTyp, err := safereflect.MapOf(reflect.TypeOf(keyType), sd)
+	if err != nil {
+		return nil, err
+	}
+	newMap, err := safereflect.MakeMap(mTyp)
+	if err != nil {
+		return nil, err
+	}
+	return newMap.Interface()
 }
 
 // SetStructFieldValue takes a typeInstance (generic/dynamic struct or reflect created instance), a fieldName string to specify the field that to set
@@ -131,57 +160,82 @@ func NewMapOfTypeWithReflectTypeKey(keyType reflect.Type, typeDefinition reflect
 // by the NewTypeInstance function are pointers. If the type instance is not a pointer to a struct instance, the fieldName does not exist on this
 // typeInstance, or the underlying type of the field does not match the type of the fieldValue this function returns an error.
 func SetStructFieldValue[T any](typeInstance any, fieldName string, fieldValue T) error {
-	if reflect.ValueOf(typeInstance).Kind() != reflect.Ptr ||
-		reflect.ValueOf(typeInstance).Elem().Kind() != reflect.Struct {
-		return fmt.Errorf("expected a pointer to a struct instance, got %s", reflect.ValueOf(typeInstance).Elem().Kind())
+	e, err := safereflect.ValueOf(typeInstance).Elem()
+	if err != nil {
+		return err
 	}
-	if !reflect.ValueOf(typeInstance).Elem().FieldByName(fieldName).IsValid() {
+	if safereflect.ValueOf(typeInstance).Kind() != safereflect.Pointer || e.Kind() != safereflect.Struct {
+		return fmt.Errorf("expected a pointer to a struct instance, got %s", e.Kind())
+	}
+	efn, err := e.FieldByName(fieldName)
+	if err != nil {
 		return fmt.Errorf("field with name: \"%s\" does not exist on struct instance", fieldName)
 	}
-	if reflect.TypeFor[T]().Kind() != reflect.ValueOf(typeInstance).Elem().FieldByName(fieldName).Kind() {
-		if reflect.TypeFor[T]().Kind() == reflect.Interface {
-			reflect.ValueOf(typeInstance).Elem().FieldByName(fieldName).Set(reflect.ValueOf(fieldValue))
-			return nil
-		}
-		return fmt.Errorf("field with name: \"%s\" has underlying type: %s, but fieldValue argument has type: %s", fieldName, reflect.ValueOf(typeInstance).Elem().FieldByName(fieldName).Kind().String(), reflect.TypeFor[T]().Kind().String())
+	if !efn.IsValid() {
+		return fmt.Errorf("field with name: \"%s\" does not exist on struct instance", fieldName)
 	}
-	reflect.ValueOf(typeInstance).Elem().FieldByName(fieldName).Set(reflect.ValueOf(fieldValue))
-	return nil
+	if safereflect.TypeFor[T]().Kind() != efn.Kind() {
+		if safereflect.TypeFor[T]().Kind() == safereflect.Interface {
+			return efn.Set(safereflect.ValueOf(fieldValue))
+		}
+		return fmt.Errorf("field with name: \"%s\" has underlying type: %s, but fieldValue argument has type: %s", fieldName, efn.Kind().String(), safereflect.TypeFor[T]().Kind().String())
+	}
+	return efn.Set(safereflect.ValueOf(fieldValue))
 }
 
 // GetStructFieldValue is a generic function. It accepts a typeInstance, a fieldName, and the expected return type T. Returns the value of
 // the field specified in fieldName. If typeInstance is not a struct, the fieldName doesn't exist on the struct, or the underlying type of
 // the field can not be type asserted to the type T, this function returns an error.
 func GetStructFieldValue[T any](typeInstance any, fieldName string) (T, error) {
-	val := reflect.ValueOf(typeInstance)
-	if val.Kind() == reflect.Ptr {
-		val = val.Elem()
+	var err error
+	val := safereflect.ValueOf(typeInstance)
+	if val.Kind() == safereflect.Pointer {
+		val, err = val.Elem()
+		if err != nil {
+			return safereflect.ZeroGeneric[T](), err
+		}
 	}
-	if val.Kind() != reflect.Struct {
-		return reflect.Zero(reflect.TypeFor[T]()).Interface().(T), errors.New("expected a struct instance")
+	if val.Kind() != safereflect.Struct {
+		return safereflect.ZeroGeneric[T](), errors.New("expected a struct instance")
 	}
-	if !val.FieldByName(fieldName).IsValid() {
-		return reflect.Zero(reflect.TypeFor[T]()).Interface().(T), errors.New("field not valid for struct instance")
+	fn, err := val.FieldByName(fieldName)
+	if err != nil {
+		return safereflect.ZeroGeneric[T](), errors.New("field not valid for struct instance")
 	}
-	if val.FieldByName(fieldName).Kind() != reflect.TypeFor[T]().Kind() {
-		return reflect.Zero(reflect.TypeFor[T]()).Interface().(T), fmt.Errorf("field with name: \"%s\" has underlying type: %s, but generic type assertion was for type: %s", fieldName, val.FieldByName(fieldName).Kind().String(), reflect.TypeFor[T]().Kind().String())
+	if !fn.IsValid() {
+		return safereflect.ZeroGeneric[T](), errors.New("field not valid for struct instance")
 	}
-	return val.FieldByName(fieldName).Interface().(T), nil
+	if fn.Kind() != safereflect.TypeFor[T]().Kind() {
+		return safereflect.ZeroGeneric[T](), fmt.Errorf("field with name: \"%s\" has underlying type: %s, but generic type assertion was for type: %s", fieldName, fn.Kind().String(), safereflect.TypeFor[T]().Kind().String())
+	}
+	fni, err := fn.Interface()
+	if err != nil {
+		return safereflect.ZeroGeneric[T](), err
+	}
+	return fni.(T), nil
 }
 
 // GetStructFieldValueAny is like GetStructFieldValue, however, it doesn't take a generic T. This function returns The value on the typeInstance of the fieldName specified.
 // If fieldName is not present on the typeInstance or the typeInstance is not a struct this function returns an error. To use the value returned from this function,
 // it should be type asserted.
 func GetStructFieldValueAny(typeInstance any, fieldName string) (any, error) {
-	val := reflect.ValueOf(typeInstance)
-	if val.Kind() == reflect.Ptr {
-		val = val.Elem()
+	var err error
+	val := safereflect.ValueOf(typeInstance)
+	if val.Kind() == safereflect.Pointer {
+		val, err = val.Elem()
+		if err != nil {
+			return nil, err
+		}
 	}
-	if val.Kind() != reflect.Struct {
+	if val.Kind() != safereflect.Struct {
 		return nil, errors.New("expected a struct instance")
 	}
-	if !val.FieldByName(fieldName).IsValid() {
+	fn, err := val.FieldByName(fieldName)
+	if err != nil {
 		return nil, errors.New("field not valid for struct instance")
 	}
-	return val.FieldByName(fieldName).Interface(), nil
+	if !fn.IsValid() {
+		return nil, errors.New("field not valid for struct instance")
+	}
+	return fn.Interface()
 }
