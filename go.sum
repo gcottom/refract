@@ -1,0 +1,6 @@
+github.com/gcottom/refract/genericdynamic v0.0.0-20241012200057-3f97991a19af h1:0RqozURxN9GHzCHOshVKax2r4L+Y2xofkSgugLfZ1Ys=
+github.com/gcottom/refract/genericdynamic v0.0.0-20241012200057-3f97991a19af/go.mod h1:je6Eurmryt36+r5D8HfvzGtpMSE3sw8olrFc5tCRT7I=
+github.com/gcottom/refract/pydict v0.0.0-20241012200057-3f97991a19af h1:sc8MSZUCVi5s6ajHp/g8nK5Bv+PkeGUjBtdkoZBGS9o=
+github.com/gcottom/refract/pydict v0.0.0-20241012200057-3f97991a19af/go.mod h1:uBJ5Hj3idH03sTBl9e62rO1w/8NsH5Dgrvqs/NVJDJ4=
+github.com/gcottom/refract/refractutils v0.0.0-20241012200057-3f97991a19af h1:0lqxfoxakufJvQEAnrRhWKSquHgYUAgrY9xmfJXnHc8=
+github.com/gcottom/refract/refractutils v0.0.0-20241012200057-3f97991a19af/go.mod h1:rk14RYbgrDZjg2tQl4M5azOfB22cSRAQKAJPYdE55e0=

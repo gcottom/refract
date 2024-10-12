@@ -1,12 +1,14 @@
-package pydict
+package godict
 
 import (
 	"encoding/json"
 	"errors"
 	"reflect"
+
+	"github.com/gcottom/refract/refractutils"
 )
 
-type RefractDict struct {
+type GoDict struct {
 	dict     JSONDict
 	slice    JSONDictSlice
 	val      any
@@ -14,13 +16,13 @@ type RefractDict struct {
 	isNull   bool
 }
 
-type JSONDict map[string]RefractDict
-type JSONDictSlice []RefractDict
+type JSONDict map[string]GoDict
+type JSONDictSlice []GoDict
 
 type SingleLevelJSONDict map[string]json.RawMessage
 type SingleLevelJSONDictSlice []json.RawMessage
 
-func (r *RefractDict) UnmarshalJSON(data []byte) error {
+func (r *GoDict) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" {
 		r.val = nil
 		r.dataType = nil
@@ -32,7 +34,7 @@ func (r *RefractDict) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &tempMap); err == nil {
 		r.dict = make(JSONDict)
 		for key, rawMsg := range tempMap {
-			var nested RefractDict
+			var nested GoDict
 			if err := nested.UnmarshalJSON(rawMsg); err != nil {
 				return err
 			}
@@ -47,7 +49,7 @@ func (r *RefractDict) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &tempSlice); err == nil {
 		r.slice = make(JSONDictSlice, len(tempSlice))
 		for i, rawMsg := range tempSlice {
-			var nested RefractDict
+			var nested GoDict
 			if err := nested.UnmarshalJSON(rawMsg); err != nil {
 				return err
 			}
@@ -68,7 +70,7 @@ func (r *RefractDict) UnmarshalJSON(data []byte) error {
 	return errors.New("unable to unmarshal JSON into RefractDict")
 }
 
-func (r RefractDict) MarshalJSON() ([]byte, error) {
+func (r GoDict) MarshalJSON() ([]byte, error) {
 	if r.isNull {
 		return []byte("null"), nil
 	}
@@ -83,12 +85,12 @@ func (r RefractDict) MarshalJSON() ([]byte, error) {
 	}
 }
 
-func (r *RefractDict) Get(index any) *RefractDict {
+func (r *GoDict) Get(index any) *GoDict {
 	switch r.dataType {
 	case reflect.TypeFor[JSONDict]():
 		s, ok := index.(string)
 		if !ok {
-			return &RefractDict{}
+			return &GoDict{}
 		}
 		ret := r.dict[s]
 		return &ret
@@ -96,19 +98,19 @@ func (r *RefractDict) Get(index any) *RefractDict {
 	case reflect.TypeFor[JSONDictSlice]():
 		i, ok := index.(int)
 		if !ok {
-			return &RefractDict{}
+			return &GoDict{}
 		}
 		if i >= len(r.slice) {
-			return &RefractDict{}
+			return &GoDict{}
 		}
 		ret := r.slice[i]
 		return &ret
 	default:
-		return &RefractDict{}
+		return &GoDict{}
 	}
 }
 
-func (r *RefractDict) GetValue() (any, error) {
+func (r *GoDict) GetValue() (any, error) {
 	if r.dataType == nil {
 		if r.isNull {
 			return nil, nil
@@ -174,7 +176,7 @@ func (dict SingleLevelJSONDict) GetSlice(key string) SingleLevelJSONDictSlice {
 
 // v should be a ptr
 func (dictSlice SingleLevelJSONDictSlice) UnmarshalJSONFromIndex(index int, v any) error {
-	val, err := GetSliceIndex(dictSlice, index)
+	val, err := refractutils.GetSliceIndex(dictSlice, index)
 	if err != nil {
 		return err
 	}
@@ -182,7 +184,7 @@ func (dictSlice SingleLevelJSONDictSlice) UnmarshalJSONFromIndex(index int, v an
 }
 
 func (dictSlice SingleLevelJSONDictSlice) GetIndex(index int) (any, error) {
-	val, err := GetSliceIndex(dictSlice, index)
+	val, err := refractutils.GetSliceIndex(dictSlice, index)
 	if err != nil {
 		return nil, err
 	}
@@ -195,7 +197,7 @@ func (dictSlice SingleLevelJSONDictSlice) GetIndex(index int) (any, error) {
 }
 
 func (dictSlice SingleLevelJSONDictSlice) GetDictAtIndex(index int) SingleLevelJSONDict {
-	val, err := GetSliceIndex(dictSlice, index)
+	val, err := refractutils.GetSliceIndex(dictSlice, index)
 	if err != nil {
 		return nil
 	}

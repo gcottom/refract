@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	"github.com/gcottom/refract/genericdynamic"
+	"github.com/gcottom/refract/godict"
 	"github.com/gcottom/refract/pydict"
 	"github.com/gcottom/refract/refractutils"
 )
@@ -185,4 +186,10 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(string(jtxt))
+
+	singleText, err := godict.UnmarshalSingleJSONKey("a", []byte(`{"a":"b"}`))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(singleText)
 }
