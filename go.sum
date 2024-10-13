@@ -4,6 +4,8 @@ github.com/gcottom/refract/genericdynamic v0.0.0-20241013011102-72b0be061489 h1:
 github.com/gcottom/refract/genericdynamic v0.0.0-20241013011102-72b0be061489/go.mod h1:9WP4QSjEVcQIEnlPZ2pMPCjz4l5xfFid4DKsFxhz3OU=
 github.com/gcottom/refract/genericdynamic v0.0.0-20241013014002-489fea617ed2 h1:5lk3rHkdmsSHpbIFBIBl2/KFbqffkEwhHRuXjpciv8s=
 github.com/gcottom/refract/genericdynamic v0.0.0-20241013014002-489fea617ed2/go.mod h1:9WP4QSjEVcQIEnlPZ2pMPCjz4l5xfFid4DKsFxhz3OU=
+github.com/gcottom/refract/genericdynamic v0.0.0-20241013014421-507e0b369ab8 h1:o6CTmoI8BnnUYHsmXr2QxtfQNsOKh+8ScGEwCMhxY58=
+github.com/gcottom/refract/genericdynamic v0.0.0-20241013014421-507e0b369ab8/go.mod h1:9WP4QSjEVcQIEnlPZ2pMPCjz4l5xfFid4DKsFxhz3OU=
 github.com/gcottom/refract/godict v0.0.0-20241012233828-4844b0564d10 h1:8PvXs+a9buO7ltOjajuu8Vj9BL0BMHe6N4oD8zAyJqI=
 github.com/gcottom/refract/godict v0.0.0-20241012233828-4844b0564d10/go.mod h1:QEZhKAxNe+8/3VNT2YjKTCbA7n7wdn2SDvXhS3gbGSQ=
 github.com/gcottom/refract/refractutils v0.0.0-20241012233828-4844b0564d10 h1:2vJiG3axzdSqTFv6NH8uTNS+ua524KV/t4XhI+mXKgk=
