@@ -1,4 +1,4 @@
-module github.com/gcottom/refract/genericdynamic
+module github.com/gcottom/refract/gendynamic
 
 go 1.22.3
 

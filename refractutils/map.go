@@ -2,34 +2,50 @@ package refractutils
 
 import (
 	"errors"
-	"reflect"
+
+	"github.com/gcottom/refract/safereflect"
 )
 
 func GetMapIndex(m any, key any) (any, error) {
-	val := reflect.ValueOf(m)
-	if val.Kind() == reflect.Map {
-		return val.MapIndex(reflect.ValueOf(key)), nil
+	val := safereflect.ValueOf(m)
+	if val.Kind() == safereflect.Map {
+		return val.MapIndex(safereflect.ValueOf(key))
 	}
 	return nil, errors.New("map argument was not a map")
 }
 
 func GetMapIndexValue(m any, key any) (any, error) {
-	val := reflect.ValueOf(m)
-	if val.Kind() == reflect.Map {
-		keyValPtr := val.MapIndex(reflect.ValueOf(key)).Interface()
-		return reflect.ValueOf(keyValPtr).Elem().Interface(), nil
+	val := safereflect.ValueOf(m)
+	if val.Kind() == safereflect.Map {
+		keyValPtr, err := val.MapIndex(safereflect.ValueOf(key))
+		if err != nil {
+			return nil, err
+		}
+		keyValPtrI, err := keyValPtr.Interface()
+		if err != nil {
+			return nil, err
+		}
+		kvpie, err := safereflect.ValueOf(keyValPtrI).Elem()
+		if err != nil {
+			return nil, err
+		}
+		return kvpie.Interface()
 	}
 	return nil, errors.New("map argument was not a map")
 }
 
 func PutMapIndex(m any, key any, value any) error {
-	val := reflect.ValueOf(m)
-	if val.Kind() == reflect.Map {
-		nval := reflect.ValueOf(&value)
-		if nval.Kind() == reflect.Ptr {
-			nval = nval.Elem()
+	var err error
+	val := safereflect.ValueOf(m)
+	if val.Kind() == safereflect.Map {
+		nval := safereflect.ValueOf(&value)
+		if nval.Kind() == safereflect.Pointer {
+			nval, err = nval.Elem()
+			if err != nil {
+				return err
+			}
 		}
-		val.SetMapIndex(reflect.ValueOf(key), nval)
+		val.SetMapIndex(safereflect.ValueOf(key), nval)
 		return nil
 	}
 	return errors.New("map argument was not a map")

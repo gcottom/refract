@@ -1,4 +1,4 @@
-package genericdynamic
+package gendynamic
 
 import (
 	"fmt"
