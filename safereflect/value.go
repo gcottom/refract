@@ -707,7 +707,7 @@ func New(t Type) (Value, error) {
 	if t.ReflectType() == nil {
 		return Value{}, errors.New("reflect.New with nil type")
 	}
-	out := reflect.New(t.ReflectType()).Elem()
+	out := reflect.New(t.ReflectType())
 	return Value{out}, nil
 }
 
