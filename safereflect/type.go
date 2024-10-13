@@ -305,7 +305,7 @@ func (t *RefractType) Out(i int) (Type, error) {
 }
 
 func TypeFor[T any]() Type {
-	return TypeOf((*T)(nil)).Elem()
+	return &RefractType{reflect.TypeFor[T]()}
 }
 
 func MapOf(key, elem Type) (Type, error) {

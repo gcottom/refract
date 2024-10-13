@@ -173,11 +173,11 @@ func SetStructFieldValue[T any](typeInstance any, fieldName string, fieldValue T
 	if !efn.IsValid() {
 		return fmt.Errorf("field with name: \"%s\" does not exist on struct instance", fieldName)
 	}
-	if safereflect.ValueOf(fieldValue).Kind() != efn.Kind() {
-		if safereflect.ValueOf(fieldValue).Kind() == safereflect.Interface {
+	if safereflect.TypeFor[T]().Kind() != efn.Kind() {
+		if safereflect.TypeFor[T]().Kind() == safereflect.Interface {
 			return efn.Set(safereflect.ValueOf(fieldValue))
 		}
-		return fmt.Errorf("field with name: \"%s\" has underlying type: %s, but fieldValue argument has type: %s", fieldName, efn.Kind().String(), safereflect.ValueOf(fieldValue).Kind().String())
+		return fmt.Errorf("field with name: \"%s\" has underlying type: %s, but fieldValue argument has type: %s", fieldName, efn.Kind().String(), safereflect.TypeFor[T]().Kind().String())
 	}
 	return efn.Set(safereflect.ValueOf(fieldValue))
 }
