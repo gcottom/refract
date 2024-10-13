@@ -45,8 +45,7 @@ func PutMapIndex(m any, key any, value any) error {
 				return err
 			}
 		}
-		val.SetMapIndex(safereflect.ValueOf(key), nval)
-		return nil
+		return val.SetMapIndex(safereflect.ValueOf(key), nval)
 	}
 	return errors.New("map argument was not a map")
 }
