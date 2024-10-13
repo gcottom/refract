@@ -5,38 +5,26 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/gcottom/refract/genericdynamic"
+	"github.com/gcottom/refract/gendynamic"
 	"github.com/gcottom/refract/godict"
 
 	"github.com/gcottom/refract/refractutils"
 )
 
 func main() {
-	d, err := genericdynamic.NewStructDefinition(genericdynamic.NewStructField("TestField", "string", ""))
+	d, err := gendynamic.NewStructDefinition(gendynamic.NewStructField("TestField", "string", ""))
 	if err != nil {
 		panic(err)
 	}
-	s, err := genericdynamic.NewSliceOfType(d)
+	s, err := gendynamic.NewSliceOfType(d)
 	if err != nil {
 		panic(err)
 	}
-	m, err := genericdynamic.NewTypeInstance(d)
+	m, err := gendynamic.NewTypeInstance(d)
 	if err != nil {
 		panic(err)
 	}
-	err = genericdynamic.SetStructFieldValue(m, "TestField", "testVal1")
-	if err != nil {
-		panic(err)
-	}
-	s, err = refractutils.Append(s, m)
-	if err != nil {
-		panic(err)
-	}
-	m, err = genericdynamic.NewTypeInstance(d)
-	if err != nil {
-		panic(err)
-	}
-	err = genericdynamic.SetStructFieldValue(m, "TestField", "testVal2")
+	err = gendynamic.SetStructFieldValue(m, "TestField", "testVal1")
 	if err != nil {
 		panic(err)
 	}
@@ -44,11 +32,23 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	m, err = genericdynamic.NewTypeInstance(d)
+	m, err = gendynamic.NewTypeInstance(d)
 	if err != nil {
 		panic(err)
 	}
-	err = genericdynamic.SetStructFieldValue(m, "TestField", "banana")
+	err = gendynamic.SetStructFieldValue(m, "TestField", "testVal2")
+	if err != nil {
+		panic(err)
+	}
+	s, err = refractutils.Append(s, m)
+	if err != nil {
+		panic(err)
+	}
+	m, err = gendynamic.NewTypeInstance(d)
+	if err != nil {
+		panic(err)
+	}
+	err = gendynamic.SetStructFieldValue(m, "TestField", "banana")
 	if err != nil {
 		panic(err)
 	}
@@ -92,7 +92,7 @@ func main() {
 	}
 	fmt.Println(si)
 
-	tf, err := genericdynamic.GetStructFieldValue[string](si, "TestField")
+	tf, err := gendynamic.GetStructFieldValue[string](si, "TestField")
 	if err != nil {
 		panic(err)
 	}
@@ -109,7 +109,7 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(si)
-	err = genericdynamic.SetStructFieldValue(si, "TestField", "not a banana")
+	err = gendynamic.SetStructFieldValue(si, "TestField", "not a banana")
 	if err != nil {
 		panic(err)
 	}
@@ -127,15 +127,15 @@ func main() {
 	}
 	fmt.Println(s)
 
-	mappy, err := genericdynamic.NewMapOfType("string", d)
+	mappy, err := gendynamic.NewMapOfType("string", d)
 	if err != nil {
 		panic(err)
 	}
-	mpyval, err := genericdynamic.NewTypeInstance(d)
+	mpyval, err := gendynamic.NewTypeInstance(d)
 	if err != nil {
 		panic(err)
 	}
-	err = genericdynamic.SetStructFieldValue(mpyval, "TestField", "I'm in the mappy")
+	err = gendynamic.SetStructFieldValue(mpyval, "TestField", "I'm in the mappy")
 	if err != nil {
 		panic(err)
 	}
@@ -154,18 +154,18 @@ func main() {
 	}
 	fmt.Printf("MapVal: %v\n", mpvalevalcopy)
 
-	typ := genericdynamic.GetReflectType(mpyval)
+	typ := gendynamic.GetReflectType(mpyval)
 	fmt.Println(typ)
 
-	ntype, err := genericdynamic.NewTypeInstance(typ)
+	ntype, err := gendynamic.NewTypeInstance(typ)
 	if err != nil {
 		panic(err)
 	}
 
-	ntype2 := genericdynamic.GetReflectType(ntype)
+	ntype2 := gendynamic.GetReflectType(ntype)
 	fmt.Println(ntype2)
 
-	mappytype := genericdynamic.GetReflectType(s)
+	mappytype := gendynamic.GetReflectType(s)
 	fmt.Println("type:", mappytype)
 	mappykind := reflect.ValueOf(s).Kind()
 	fmt.Println("kind:", mappykind)

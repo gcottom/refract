@@ -1,3 +1,5 @@
+github.com/gcottom/refract/refractutils v0.0.0-20241013020713-c30bda7cedd9 h1:Px0n7QYhu3C7xPX86JrqSaFE/rcCxCPeExa4qrEtw30=
+github.com/gcottom/refract/refractutils v0.0.0-20241013020713-c30bda7cedd9/go.mod h1:99xMHVMn55NCJyTjZ5W03GS+rORMchP7r36DQBhDWUw=
 github.com/gcottom/refract/safereflect v0.0.0-20241012224006-6ed10a09725b h1:0Mt9nKZeHxDPRl2kc4fv9xifZvTbtMksEoChtKLKzEg=
 github.com/gcottom/refract/safereflect v0.0.0-20241012224006-6ed10a09725b/go.mod h1:eZTE8IpdSZStD3wHFG3Jg8t81joY7ouDTWh+lIif08E=
 github.com/gcottom/refract/safereflect v0.0.0-20241012233828-4844b0564d10 h1:QeN1b79o/XUICyPh01NX3YFe2RL0wHSVN5qyMkriVQ8=
