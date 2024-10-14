@@ -176,7 +176,7 @@ func (t *RefractType) IsVariadic() (bool, error) {
 }
 
 func (t *RefractType) Elem() Type {
-	return TypeOf(t.T.Elem())
+	return &RefractType{t.T.Elem()}
 }
 
 func (t *RefractType) Field(i int) (StructField, error) {

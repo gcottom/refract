@@ -16,6 +16,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(d)
 	s, err := gendynamic.NewSliceOfType(d)
 	if err != nil {
 		panic(err)
@@ -139,6 +140,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("MapVal: %v\n", mpyval)
 	err = refractutils.PutMapIndex(mappy, "ind1", mpyval)
 	if err != nil {
 		panic(err)

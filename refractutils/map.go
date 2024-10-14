@@ -25,11 +25,7 @@ func GetMapIndexValue(m any, key any) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		kvpie, err := safereflect.ValueOf(keyValPtrI).Elem()
-		if err != nil {
-			return nil, err
-		}
-		return kvpie.Interface()
+		return safereflect.ValueOf(keyValPtrI).Interface()
 	}
 	return nil, errors.New("map argument was not a map")
 }
@@ -38,7 +34,7 @@ func PutMapIndex(m any, key any, value any) error {
 	var err error
 	val := safereflect.ValueOf(m)
 	if val.Kind() == safereflect.Map {
-		nval := safereflect.ValueOf(&value)
+		nval := safereflect.ValueOf(value)
 		if nval.Kind() == safereflect.Pointer {
 			nval, err = nval.Elem()
 			if err != nil {

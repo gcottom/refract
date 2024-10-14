@@ -119,15 +119,18 @@ func NewMapOfType[T comparable](keyType T, typeDefinition safereflect.Type) (any
 	if err != nil {
 		return nil, err
 	}
-	sd := safereflect.ValueOf(&si).Type().Elem()
+	sd := safereflect.ValueOf(si).Type().Elem()
+	fmt.Println(sd)
 	mTyp, err := safereflect.MapOf(safereflect.TypeOf(keyType), sd)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(mTyp)
 	newMap, err := safereflect.MakeMap(mTyp)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(newMap)
 	return newMap.Interface()
 }
 
@@ -173,7 +176,7 @@ func SetStructFieldValue[T any](typeInstance any, fieldName string, fieldValue T
 	if !efn.IsValid() {
 		return fmt.Errorf("field with name: \"%s\" does not exist on struct instance", fieldName)
 	}
-	if safereflect.TypeFor[T]().Kind() != efn.Kind() {
+	if safereflect.ValueOf(fieldValue).Type().Kind() != efn.Kind() {
 		if safereflect.TypeFor[T]().Kind() == safereflect.Interface {
 			return efn.Set(safereflect.ValueOf(fieldValue))
 		}
